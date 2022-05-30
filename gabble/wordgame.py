@@ -42,12 +42,12 @@ class WordGame:
 	def get_game_board(self):
 		rows = []
 		for x in self.previous_guesses:
-			row = ''
+			row = x + ': '
 			for i in range(len(x)):
 				if x[i] == self._answer[i]:
-					row += x[i].upper()
+					row += 'X'
 				elif x[i] in self._answer:
-					row += x[i].lower()
+					row += '?'
 				else:
 					row += '_'
 			rows.append(row)
@@ -61,8 +61,15 @@ class WordGame:
 		return answer.lower().strip()
 
 
+class WordGameError(Exception):
+
+	pass
+
+
 def play_word_game(answer: str):
 	WordLoader.load_words()
+	if not WordLoader.is_word_valid(answer):
+		raise WordGameError('Answer: {0} is not a valid word'.format(answer))
 	word_game = WordGame(answer)
 	answer = None
 	print('**********')
@@ -70,6 +77,7 @@ def play_word_game(answer: str):
 	while not (answer == WordGameAnswer.RIGHT_ANSWER or answer == WordGameAnswer.GAME_OVER):
 		if len(word_game.previous_guesses) > 0:
 			print('Your previous tries ({0}):'.format(str(len(word_game.previous_guesses))))
+			print('**********')
 			for i in word_game.get_game_board():
 				print(i)
 			print('**********')
